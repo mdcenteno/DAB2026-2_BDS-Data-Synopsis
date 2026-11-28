@@ -9,6 +9,8 @@
 
             FlowGenerator flowGenerator = new FlowGenerator(maxValue);
             ReservoirSampling reservoirSampling = new ReservoirSampling(100);
+            const int snapshotCount = 4;
+            int nextSnapshot = 1;
 
             for (int i = 0; i < flowSize; i++)
             {
@@ -18,6 +20,15 @@
                 //item = flowGenerator.spitOutBellCurveWithMovingPeak(1.0, flowSize);
                 item = flowGenerator.spitOutBellCurveWithTwoPeaks(1.0, flowSize);
                 reservoirSampling.Receive(item);
+
+                int processedItems = i + 1;
+                int snapshotIteration = (flowSize * nextSnapshot + snapshotCount - 1) / snapshotCount;
+                if (processedItems >= snapshotIteration)
+                {
+                    Console.WriteLine($"Flow Generator Snapshot {nextSnapshot}/{snapshotCount} ({processedItems * 100 / flowSize}%):");
+                    Printer.PrintHistogramBar(flowGenerator.FlowResultHistogram);
+                    nextSnapshot++;
+                }
             }
 
             Console.WriteLine("Reservoir Sampling Results:");
