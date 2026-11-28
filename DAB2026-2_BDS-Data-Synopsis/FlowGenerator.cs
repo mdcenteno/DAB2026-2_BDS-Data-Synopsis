@@ -25,30 +25,34 @@ namespace DAB2026_2_BDS_Data_Synopsis
         {
             index++;
             int value = random.Next(0, maxValue);
-
             Register(value);
-
             return value;
-        }
-
-        private void Register(int value)
-        {
-            FlowResult.Add(value);
-            FlowResultHistogram[value] = FlowResultHistogram.TryGetValue(value, out int count)
-                ? count + 1
-                : 1;
         }
 
         public int spitOutBellCurve(double standardDeviation)
         {
-            if (!double.IsFinite(standardDeviation) || standardDeviation < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(standardDeviation), "O desvio padrão deve ser finito e não negativo.");
-            }
-
+            ValidateStandardDeviation(standardDeviation);
             index++;
 
             double mean = (maxValue - 1) / 2.0;
+            return GenerateBellCurveValue(mean, standardDeviation);
+        }
+
+        public int spitOutBellCurveWithMovingPeak(double standardDeviation, int flowSize)
+        {
+            ValidateFlowSize(flowSize);
+            ValidateStandardDeviation(standardDeviation);
+
+            index++;
+            double progress = flowSize == 1
+                ? 0
+                : Math.Clamp((index - 1.0) / (flowSize - 1), 0, 1);
+            double mean = progress * (maxValue - 1);
+            return GenerateBellCurveValue(mean, standardDeviation);
+        }
+
+        private int GenerateBellCurveValue(double mean, double standardDeviation)
+        {
             double valueAsDouble = mean;
             if (standardDeviation > 0)
             {
@@ -60,8 +64,31 @@ namespace DAB2026_2_BDS_Data_Synopsis
 
             int value = (int)Math.Round(Math.Clamp(valueAsDouble, 0, maxValue - 1));
             Register(value);
-
             return value;
+        }
+
+        private void Register(int value)
+        {
+            FlowResult.Add(value);
+            FlowResultHistogram[value] = FlowResultHistogram.TryGetValue(value, out int count)
+                ? count + 1
+                : 1;
+        }
+
+        private static void ValidateStandardDeviation(double standardDeviation)
+        {
+            if (!double.IsFinite(standardDeviation) || standardDeviation < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(standardDeviation), "O desvio padrão deve ser finito e não negativo.");
+            }
+        }
+
+        private static void ValidateFlowSize(int flowSize)
+        {
+            if (flowSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(flowSize), "O tamanho do fluxo deve ser maior que zero.");
+            }
         }
     }
 }

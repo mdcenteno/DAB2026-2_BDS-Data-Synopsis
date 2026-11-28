@@ -12,7 +12,8 @@
             for (int i = 0; i < flowSize; i++)
             {
                 //int item = flowGenerator.spitOutRandom();
-                int item = flowGenerator.spitOutBellCurve(3.0);
+                //int item = flowGenerator.spitOutBellCurve(3.0);
+                int item = flowGenerator.spitOutBellCurveWithMovingPeak(1.0, flowSize);
                 reservoirSampling.Receive(item);
             }
 
