@@ -12,8 +12,18 @@ namespace DAB2026_2_BDS_Data_Synopsis
         Random random;
         int index;
         int maxValue;
+        int[]? randomPeakMeans;
+        int randomPeakFlowSize;
+        int randomPeakCount;
+        int randomPeakSampleIndex;
+
         public FlowGenerator(int maxValue)
         {
+            if (maxValue <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(maxValue), "O valor máximo deve ser maior que zero.");
+            }
+
             random ??= Random.Shared;
             index = 0;
             this.maxValue = maxValue;
@@ -63,6 +73,39 @@ namespace DAB2026_2_BDS_Data_Synopsis
                 : maxValue * 0.75;
 
             return GenerateBellCurveValue(mean, standardDeviation);
+        }
+
+        public int spitOutBellCurveWithRandomPeaks(double standardDeviation, int flowSize, int peakCount)
+        {
+            ValidateFlowSize(flowSize);
+            ValidateStandardDeviation(standardDeviation);
+            if (peakCount <= 0 || peakCount > flowSize)
+            {
+                throw new ArgumentOutOfRangeException(nameof(peakCount), "A quantidade de picos deve estar entre 1 e o tamanho do fluxo.");
+            }
+
+            if (randomPeakMeans == null)
+            {
+                Console.WriteLine("Picos:");
+                randomPeakMeans = new int[peakCount];
+                for (int i = 0; i < peakCount; i++)
+                {
+                    randomPeakMeans[i] = random.Next(0, maxValue);
+                    Console.WriteLine($"Pico {i + 1}: {randomPeakMeans[i]}");
+                }
+
+                randomPeakFlowSize = flowSize;
+                randomPeakCount = peakCount;
+            }
+            else if (flowSize != randomPeakFlowSize || peakCount != randomPeakCount)
+            {
+                throw new InvalidOperationException("O tamanho do fluxo e a quantidade de picos devem permanecer iguais durante a geração.");
+            }
+
+            index++;
+            int peakIndex = (int)Math.Min((long)randomPeakSampleIndex * peakCount / flowSize, peakCount - 1);
+            randomPeakSampleIndex++;
+            return GenerateBellCurveValue(randomPeakMeans[peakIndex], standardDeviation);
         }
 
         private int GenerateBellCurveValue(double mean, double standardDeviation)
