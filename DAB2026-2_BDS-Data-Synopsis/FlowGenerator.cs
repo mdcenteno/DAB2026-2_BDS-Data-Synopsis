@@ -40,21 +40,26 @@ namespace DAB2026_2_BDS_Data_Synopsis
                 : 1;
         }
 
-        public int spitOutBellCurve()
+        public int spitOutBellCurve(double standardDeviation)
         {
-            index++;
-
-            // Somando 4 números aleatórios para formar a Bell Curve centrada no meio do intervalo
-            int sum = 0;
-            const int rolls = 4;
-            for (int i = 0; i < rolls; i++)
+            if (!double.IsFinite(standardDeviation) || standardDeviation < 0)
             {
-                sum += random.Next(0, maxValue);
+                throw new ArgumentOutOfRangeException(nameof(standardDeviation), "O desvio padrão deve ser finito e não negativo.");
             }
 
-            // Média dos lançamentos mantém o valor final dentro de [0, maxValue)
-            int value = sum / rolls;
+            index++;
 
+            double mean = (maxValue - 1) / 2.0;
+            double valueAsDouble = mean;
+            if (standardDeviation > 0)
+            {
+                double u1 = 1.0 - random.NextDouble();
+                double u2 = random.NextDouble();
+                double standardNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2);
+                valueAsDouble = mean + standardDeviation * standardNormal;
+            }
+
+            int value = (int)Math.Round(Math.Clamp(valueAsDouble, 0, maxValue - 1));
             Register(value);
 
             return value;
