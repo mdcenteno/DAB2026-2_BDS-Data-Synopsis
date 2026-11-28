@@ -4,12 +4,13 @@
     {
         static void Main(string[] args)
         {
-            int flowSize = 100000;
-            int maxValue = 20;
+            int flowSize = 500000;
+            int maxValue = 50;
 
             FlowGenerator flowGenerator = new FlowGenerator(maxValue);
             ReservoirSampling reservoirSampling = new ReservoirSampling(100);
-            const int snapshotCount = 6;
+            CountMinSketch countMinSketch = new CountMinSketch(depth: 5, width: 64);
+            const int snapshotCount = 1;
             int nextSnapshot = 1;
 
             for (int i = 0; i < flowSize; i++)
@@ -18,9 +19,10 @@
                 //item = flowGenerator.spitOutRandom();
                 //item = flowGenerator.spitOutBellCurve(3.0);
                 //item = flowGenerator.spitOutBellCurveWithMovingPeak(1.0, flowSize);
-                //item = flowGenerator.spitOutBellCurveWithTwoPeaks(1.0, flowSize);
-                item = flowGenerator.spitOutBellCurveWithRandomPeaks(1.0, flowSize, 3);
+                item = flowGenerator.spitOutBellCurveWithTwoPeaks(1.0, flowSize);
+                //item = flowGenerator.spitOutBellCurveWithRandomPeaks(1.0, flowSize, 3);
                 reservoirSampling.Receive(item);
+                countMinSketch.Receive(item);
 
                 int processedItems = i + 1;
                 int snapshotIteration = (flowSize * nextSnapshot + snapshotCount - 1) / snapshotCount;
@@ -37,6 +39,9 @@
 
             Console.WriteLine("Reservoir Sampling Results:");
             Printer.PrintHistogramBar(reservoirSampling.PublishResults());
+
+            Console.WriteLine("Count Min Sketch Results:");
+            Printer.PrintHistogramBar(countMinSketch.PublishResults());
 
             Console.WriteLine("Flow Generator Histogram:");
             Printer.PrintHistogramBar(flowGenerator.FlowResultHistogram);
