@@ -9,7 +9,6 @@ namespace DAB2026_2_BDS_Data_Synopsis
         public List<int> FlowResult { get; set; }
         public SortedDictionary<int, int> FlowResultHistogram { get; set; }
 
-
         Random random;
         int index;
         int maxValue;

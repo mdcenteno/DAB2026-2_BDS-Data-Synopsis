@@ -17,15 +17,13 @@
             }
 
             Console.WriteLine("Reservoir Sampling Results:");
-            Printer.PrintHistogram(reservoirSampling.PublishResults());
+            Printer.PrintHistogramBar(reservoirSampling.PublishResults());
 
             Console.WriteLine("Flow Generator Histogram:");
-            Printer.PrintHistogram(flowGenerator.FlowResultHistogram);
+            Printer.PrintHistogramBar(flowGenerator.FlowResultHistogram);
 
             //Console.WriteLine("Flow Generator Result:");
             //Printer.PrintList(flowGenerator.FlowResult);
-
-
         }
     }
 }
