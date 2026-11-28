@@ -5,15 +5,18 @@
         static void Main(string[] args)
         {
             int flowSize = 100000;
+            int maxValue = 20;
 
-            FlowGenerator flowGenerator = new FlowGenerator(20);
+            FlowGenerator flowGenerator = new FlowGenerator(maxValue);
             ReservoirSampling reservoirSampling = new ReservoirSampling(100);
 
             for (int i = 0; i < flowSize; i++)
             {
-                //int item = flowGenerator.spitOutRandom();
-                //int item = flowGenerator.spitOutBellCurve(3.0);
-                int item = flowGenerator.spitOutBellCurveWithMovingPeak(1.0, flowSize);
+                int item;
+                //item = flowGenerator.spitOutRandom();
+                //item = flowGenerator.spitOutBellCurve(3.0);
+                //item = flowGenerator.spitOutBellCurveWithMovingPeak(1.0, flowSize);
+                item = flowGenerator.spitOutBellCurveWithTwoPeaks(1.0, flowSize);
                 reservoirSampling.Receive(item);
             }
 

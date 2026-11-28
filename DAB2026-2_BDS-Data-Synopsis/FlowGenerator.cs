@@ -51,6 +51,20 @@ namespace DAB2026_2_BDS_Data_Synopsis
             return GenerateBellCurveValue(mean, standardDeviation);
         }
 
+        public int spitOutBellCurveWithTwoPeaks(double standardDeviation, int flowSize)
+        {
+            ValidateFlowSize(flowSize);
+            ValidateStandardDeviation(standardDeviation);
+
+            index++;
+            int firstHalfSize = flowSize / 2 + flowSize % 2;
+            double mean = index <= firstHalfSize
+                ? maxValue * 0.25
+                : maxValue * 0.75;
+
+            return GenerateBellCurveValue(mean, standardDeviation);
+        }
+
         private int GenerateBellCurveValue(double mean, double standardDeviation)
         {
             double valueAsDouble = mean;
